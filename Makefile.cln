@@ -1,0 +1,9 @@
+lib:
+ifdef DEBUG
+	cd src; make DEBUG=YES
+else
+	cd src; make
+endif
+
+exe:
+	@echo "Hv only builds as a library."

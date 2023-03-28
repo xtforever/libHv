@@ -1,0 +1,75 @@
+Package name:     Hv
+Version number:   1.060
+Original author:  David Heddle (TJNAF) <heddle@cebaf.gov>
+Original URL:     http://www.jlab.org/~heddle/
+HP-UX URL:        http://hpux.connect.org.uk/hppd/cgi-bin/search?package=&term=Hv-
+Install tree:     /opt/Hv
+Report bugs to:   steff@connect.org.uk
+Tested on:        HP 9000/780/C160 running HP-UX 11.00
+C compiler used:  Version A.11.01.03
+Purpose:
+A GUI library for scientific applications. Hv (For Hot Views) is a library for
+developing graphical user interfaces for scientific and engineering
+applications. It is based on X, Xt and Motif and has been tested on most Unix
+flavours. Use Hv o represent physical devices (such as nuclear physics
+detectors) and allow the user to interact with the representations. In order to
+do this it must maintain world coordinates in addition to the usual screen
+coordinates, this makes it useful for other non-pixel based graphics such as
+scientific plotting and drawing maps and overlays
+Date archived:    Wed 17 May 2000
+
+-------------------------------------------------------------------------------
+
+System:
+======
+	HP-UX B.10.20 A 9000/780 & HP-UX B.11.00 A 9000/780
+URL:
+====
+	http://www.jlab.org/~heddle/Hv/   The (large) manual is here too.
+
+	At last check (17/05/00) Hv was no longer publicly available.
+  
+
+Please note the following:
+
+	The Hv library was developed at CEBAF under contract to the
+	Department of Energy and is the property of the U.S. Government.
+
+	It may be used to develop commercial software, but the Hv
+	source code and/or compiled modules/libraries may not be sold.
+
+	Questions or comments should be directed to heddle@cebaf.gov
+
+
+
+HP Porting Changes:
+===================
+  Configuration Files changed
+  ----------------------------
+
+
+  Makefile
+   - Ported from Gmake to "make" for HP systems.  Copy the original
+     (Makefile.cln) back on top of the Makefile if you preferr to 
+     use Gmake.
+  
+
+
+Building:
+=========
+
+  Run "make" in the top level dir.
+
+  Use "make -n install" to check the defaults, then "make install"
+
+
+Installed:
+==========
+ By
+ --     [steff@csc.liv.ac.uk][stephie@connect.org.uk]
+ On
+ --	[Tue  8 Sep 1998]
+ 
+ 
+       HPUX Porting and Archive Centre, Connect, Liverpool University.
+  __/__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/

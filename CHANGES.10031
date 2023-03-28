@@ -1,0 +1,137 @@
+===================================================
+NOTE:  all correspondence should be addressed to
+
+               heddle@cebaf.gov
+===================================================
+
+
+KNOWN BUGS/PROBLEMS
+
+1) Postscript woes
+
+  The biggest known problem in Hv is the fragile
+  nature of the postscript code. We patch things
+  as reported, but it is fair to say the complete
+  satisfaction with a printout is probably the
+  exception rather than the rule. However, "good
+  enough" results are obtained most of the time.
+
+
+  ANY and ALL help in making the ps code more robust
+  would be greatly appreciated and acknowledged.
+  In lieu of user support, we'll trundle along as best
+  as we can.
+
+
+CHANGES
+
+********* version 1.0042 ****************
+
+A lot of uninteresting bug fixes from 1.0032
+through the unreleased versions and up to
+the released version 1.0042. A big change is
+to the directory structure, which is now more
+amenable to multiplatform development.
+
+******** version 1.0032 ******************
+
+minor bug fixes, including the omission of
+Hv_DONOTHINGONRESIZE for the drawing tools
+in the hvplot demo (reported by Ed Kearns)
+
+******** version 1.0031 *******************
+
+1) There is a new environment variable HV_CC
+   assumed in the Makefile. This is to make it
+   easier to switch compilers. The canonical
+   recommendation is to use gcc whenever it
+   is available. The Makefiles and the example
+   installation scripts are aware of this new
+   variable.
+
+2) Main window geometry
+
+The main window can now be given absolute geometry,
+rather than the default (wherein it is calculated
+as a certain percentage of the display). This is
+done via Hv_LEFT, Hv_TOP, Hv_WIDTH and Hv_HEIGHT
+attributes in Hv_VaInitialize. If the attributes
+are not set, the usual default sizing is performed.
+
+3) Main window background color
+
+The main window background color can now be set
+via an attribute (Hv_MAINWINDOWCOLOR) to Hv_VaInitialize.
+The default will remain the familiar blue tone.
+
+NOTE:
+
+This attribute is a little tricky, in that it should
+be a pointer to one of the Hv colors, NOT the color
+itself. For example, to make the background red,
+pass the attribute pair
+
+    Hv_MAINWINDOWCOLOR,   &Hv_red
+
+to Hv_VaInitialize.
+
+The reason is that at this point in the process,
+the colors have not been defined, so that the
+value of Hv_red is garbage. So we latch on to its
+address, and later, when it is safe, set the
+main window color to the contents.
+
+4) Motionless Feedback
+
+Some users wanted the feedback to update even if
+the mouse wasn't moved. This is because the content
+of the hotrect was changing dynamically and they
+didn't want to kick start the feedback by moving
+the mouse.
+
+Motionless feedback is implemented through a timer
+on a view by view basis. It is activated via
+two new attributes which can be used at view
+creation (i.e. through Hv_VaCreateView):
+
+  attibute                 type       default
+============================================
+Hv_MOTIONLESSFB            Boolean     False 
+Hv_MOTIONLESSFBINTERVAL    int         1000
+
+Hv_MOTIONLESSFBINTERVAL is in milliseconds, it is
+the time interval between automatic calls to the
+view's regular feedback routine, using the location
+of the mouse at the time the timer expired.
+
+5) MUCH snazzier drawing tools.The old drawing tools
+   are still there, and are still created via
+   Hv_StandardTools. The new tools, which make
+   use of the new Hv native view menus, (available
+   since version 1.0030) are created via a new
+   routine: Hv_AddDrawingTools, which has
+   the same arguments, so that a switch should
+   be painless. For example:
+
+       Hv_AddDrawingTools(View,
+	 	     View->hotrect->right+10,
+		     View->hotrect->top-3,
+		     Hv_HORIZONTAL,
+		     Hv_SHIFTXONRESIZE,
+		     Hv_lightSeaGreen,
+		     True,
+		     &BaseLeft,
+		     &BaseRight);
+
+6) Font selection on HotRect text items, such as those
+   created by the drawing tools, is greatly improved.
+   Font selection is no done via three option menus,
+   one each for the font family, size, and style. This
+   is the way it should always have been done, but we
+   had trouble (until recently) with Motif's menu
+   history mechanism.
+   
+7) hvplot has been updated to version 1.0014
+
+8) the demo "simple" has been updated to display most
+   of these changes.

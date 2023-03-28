@@ -1,0 +1,319 @@
+        ifndef OS_NAME
+           OS_NAME = $(shell uname)
+        endif
+
+#---------------------------------------------------------------------
+# Define the C compiler and C Flags
+#---------------------------------------------------------------------
+
+        ifdef DEBUG
+          CFLAGS = -g
+        else
+          CFLAGS = -O
+        endif
+
+        CC = cc
+
+        ifeq ($(OS_NAME),Linux)
+          CC = gcc 
+ 	  CFLAGS += -Wall -m486 -ansi
+        endif
+
+        ifeq ($(OS_NAME),HP-UX)
+          CC = gcc 
+ 	  CFLAGS += -Wall -ansi
+        endif
+
+	CFLAGS += -c
+
+#---------------------------------------------------------------------
+# Define the necessary X libraries and paths
+# First the default settings, and then architectural
+# dependent mods -- YOU MAY HAVE TO HACK THESE PATHS
+#---------------------------------------------------------------------
+
+
+        XINCLUDEDIR   = /usr/include/X11
+	XMINCLUDEDIR  = /usr/include/X11 
+        RANLIB        = ranlib
+
+        ifeq ($(OS_NAME),Linux)
+          XINCLUDEDIR  = /usr/X11R6/include
+          XMINCLUDEDIR = /usr/X11R6/include
+        endif
+
+        ifeq ($(OS_NAME),IRIX)
+          RANLIB       = @echo
+        endif
+
+        ifeq ($(OS_NAME),IRIX64)
+          RANLIB       = @echo
+        endif
+
+        ifeq ($(OS_NAME),OSF1)
+          RANLIB       = @echo
+        endif
+
+        ifeq ($(OS_NAME),SunOS)
+          XINCLUDEDIR  = /usr/openwin/include
+          XMINCLUDEDIR = /opt/SUNWspro/Motif_Solaris24/dt/include 
+        endif
+
+        ifeq ($(OS_NAME),HP-UX)
+          XINCLUDEDIR  = /usr/include/X11R5
+          XMINCLUDEDIR = /usr/include/Motif1.2
+          RANLIB       = @echo
+        endif
+
+        ifeq ($(OS_NAME),AIX)
+        endif
+
+#---------------------------------------------------------------------
+#define rm & mv so as not to return errors
+#---------------------------------------------------------------------
+
+     RM =  rm -f
+     MV =  mv -f
+
+
+#---------------------------------------------------------------------
+# Define (relative to the source dir) the object dir
+#---------------------------------------------------------------------
+
+     ifdef DEBUG
+       OBJDIR = ../$(OS_NAME)/DBG
+     else
+       OBJDIR = ../$(OS_NAME)
+     endif
+
+#---------------------------------------------------------------------
+#define the archiver
+#---------------------------------------------------------------------
+
+     AR =  ar
+
+#---------------------------------------------------------------------
+# This variable lists the subdirectories to search for include files.
+#---------------------------------------------------------------------
+
+     INCLUDES = -I$(XINCLUDEDIR)\
+        -I$(XMINCLUDEDIR)
+
+#---------------------------------------------------
+#program and library names
+#---------------------------------------------------
+
+     LIBNAME = $(HV_ROOT)/$(OS_NAME)/libHv.a
+
+#---------------------------------------------------------------------
+#the source files that make up the application
+#---------------------------------------------------------------------
+
+SRCS = \
+          Hv_attributes.c\
+          Hv_balloon.c\
+          Hv_barplot.c\
+          Hv_box.c\
+          Hv_button.c\
+          Hv_callback.c\
+          Hv_choice.c\
+          Hv_color.c\
+          Hv_colorbutton.c\
+          Hv_compound.c\
+          Hv_configure.c\
+          Hv_connect.c\
+          Hv_container.c\
+          Hv_dlogmenus.c\
+          Hv_dlogs.c\
+          Hv_dlogsupport.c\
+          Hv_dlogtext.c\
+          Hv_drag.c\
+          Hv_draw.c\
+          Hv_drawsupport.c\
+          Hv_drawtools.c\
+          Hv_feedback.c\
+          Hv_fileselect.c\
+          Hv_fonts.c\
+          Hv_fractdone.c\
+          Hv_help.c\
+          Hv_histo.c\
+          Hv_init.c\
+          Hv_io.c\
+          Hv_items.c\
+          Hv_led.c\
+          Hv_linklist.c\
+          Hv_listdlogs.c\
+          Hv_mapitem.c\
+          Hv_mapmath.c\
+          Hv_mapreader.c\
+          Hv_math.c\
+          Hv_menubutton.c\
+          Hv_menus.c\
+          Hv_offscreen.c\
+          Hv_optionbutton.c\
+          Hv_plotsupport.c\
+          Hv_pointer.c\
+          Hv_postscript.c\
+          Hv_print.c\
+          Hv_privdraw.c\
+          Hv_psdraw.c\
+          Hv_radiodlogs.c\
+          Hv_rainbowscale.c\
+          Hv_rectsupport.c\
+          Hv_region.c\
+          Hv_scaledlogs.c\
+          Hv_scroll.c\
+          Hv_separator.c\
+          Hv_slider.c\
+          Hv_standard.c\
+          Hv_textentryitem.c\
+          Hv_textitem.c\
+          Hv_undo.c\
+          Hv_utilities.c\
+          Hv_views.c\
+          Hv_virtual.c\
+          Hv_wheel.c\
+          Hv_worldline.c\
+          Hv_worldpolygon.c\
+          Hv_worldrect.c\
+          Hv_worldwedge.c\
+          Hv_xyplot.c\
+          Hv_xyplotedit.c\
+          Hv_xyplotio.c
+
+
+#---------------------------------------------------------------------
+# The object files (via macro substitution)
+#---------------------------------------------------------------------
+
+
+     OBJS = ${SRCS:.c=.o}
+
+#---------------------------------------------------------------------
+#how to make a .o file from a .c file 
+#---------------------------------------------------------------------
+
+$(OBJDIR)/%.o : %.c
+	@test -d $(OBJDIR) || mkdir -p $(OBJDIR) ;
+	$(CC) $(CFLAGS) $(INCLUDES) $< -o $@
+
+#--------------------------------------------------------
+# Default target
+
+#the tmpfle business is just so mv does not
+#give an error if no files are there to move
+
+#--------------------------------------------------------
+
+     lib: $(addprefix $(OBJDIR)/,$(OBJS))
+	$(AR) r $(LIBNAME) $(addprefix $(OBJDIR)/,$(OBJS))
+	$(RANLIB) $(LIBNAME)
+
+     exe:
+	@echo "Hv only builds as a library."
+
+#---------------------------------------------------------------------
+# This rule cleans up the build directory (type "make clean").
+#---------------------------------------------------------------------
+
+     clean: 
+	$(RM) $(addprefix $(OBJDIR)/,$(OBJS))
+
+#---------------------------------------------------------------------
+#this rule makes the help file
+#---------------------------------------------------------------------
+
+     help:
+	$(RM) ../Hv.help
+	nroff ../Hv_beforenroff.help >> ../Hv.help
+
+#---------------------------------------------------------------------
+#this rule boxes up Hv
+#---------------------------------------------------------------------
+
+     boxup:
+	$(RM) -r  $(HOME)/Hv_export
+	mkdir $(HOME)/Hv_export
+	cd $(HOME)/Hv_export; cvs export -D "1 second ago" Hv
+	cd $(HOME)/Hv_export; tar cvf Hv.tar Hv
+	cd $(HOME)/Hv_export; compress Hv.tar
+
+#---------------------------------------------------------------------
+#additional dependencies
+#---------------------------------------------------------------------
+
+STANDARD = Hv.h Hv_data.h Hv_private.h Hv_linklist.h Hv_undo.h Hv_attributes.h
+PLUSPLOT = $(STANDARD) Hv_xyplot.h
+PLUSMAPS = $(STANDARD) Hv_maps.h
+
+$(OBJDIR)/Hv_attributes.o:     $(STANDARD)
+$(OBJDIR)/Hv_balloon.o:        $(STANDARD)
+$(OBJDIR)/Hv_barplot.o:        $(PLUSPLOT)
+$(OBJDIR)/Hv_box.o:            $(STANDARD)
+$(OBJDIR)/Hv_button.o:         $(STANDARD)
+$(OBJDIR)/Hv_callback.o:       $(STANDARD)
+$(OBJDIR)/Hv_color.o:          $(STANDARD)
+$(OBJDIR)/Hv_colorbutton.o:    $(STANDARD)
+$(OBJDIR)/Hv_compound.o:       $(STANDARD)
+$(OBJDIR)/Hv_configure.o:      $(STANDARD)
+$(OBJDIR)/Hv_connect.o:        $(STANDARD)
+$(OBJDIR)/Hv_container.o:      $(STANDARD)
+$(OBJDIR)/Hv_dlogmenus.o:      $(STANDARD)
+$(OBJDIR)/Hv_dlogs.o:          $(STANDARD)
+$(OBJDIR)/Hv_dlogsupport.o:    $(STANDARD)
+$(OBJDIR)/Hv_dlogtext.o:       $(STANDARD)
+$(OBJDIR)/Hv_drag.o:           $(STANDARD)
+$(OBJDIR)/Hv_draw.o:           $(STANDARD)
+$(OBJDIR)/Hv_drawsupport.o:    $(STANDARD)
+$(OBJDIR)/Hv_drawtools.o:      $(STANDARD)
+$(OBJDIR)/Hv_feedback.o:       $(STANDARD)
+$(OBJDIR)/Hv_fileselect.o:     $(STANDARD)
+$(OBJDIR)/Hv_fonts.o:          $(STANDARD)
+$(OBJDIR)/Hv_fractdone.o:      $(STANDARD)
+$(OBJDIR)/Hv_help.o:           $(STANDARD)
+$(OBJDIR)/Hv_histo.o:          $(PLUSPLOT)
+$(OBJDIR)/Hv_init.o:           $(STANDARD)
+$(OBJDIR)/Hv_io.o:             $(STANDARD)
+$(OBJDIR)/Hv_items.o:          $(PLUSMAPS)
+$(OBJDIR)/Hv_led.o:            $(STANDARD)
+$(OBJDIR)/Hv_linklist.o:       $(STANDARD) 
+$(OBJDIR)/Hv_listdlogs.o:      $(STANDARD)
+$(OBJDIR)/Hv_mapitem.o:        $(PLUSMAPS)
+$(OBJDIR)/Hv_mapmath.o:        $(PLUSMAPS)
+$(OBJDIR)/Hv_mapreader.o:      $(PLUSMAPS)
+$(OBJDIR)/Hv_math.o:           $(STANDARD)
+$(OBJDIR)/Hv_menubutton.o:     $(STANDARD)
+$(OBJDIR)/Hv_menus.o:          $(PLUSPLOT)
+$(OBJDIR)/Hv_offscreen.o:      $(STANDARD)
+$(OBJDIR)/Hv_optionbutton.o:   $(STANDARD)
+$(OBJDIR)/Hv_plotsupport.o:    $(PLUSPLOT)
+$(OBJDIR)/Hv_pointer.o:        $(PLUSPLOT)
+$(OBJDIR)/Hv_postscript.o:     $(STANDARD)
+$(OBJDIR)/Hv_print.o:          $(STANDARD)
+$(OBJDIR)/Hv_privdraw.o:       $(STANDARD)
+$(OBJDIR)/Hv_psdraw.o:         $(STANDARD)
+$(OBJDIR)/Hv_choice.o:         $(STANDARD)
+$(OBJDIR)/Hv_radiodlogs.o:     $(STANDARD)
+$(OBJDIR)/Hv_rainbowscale.o:   $(STANDARD)
+$(OBJDIR)/Hv_rectsupport.o:    $(STANDARD)
+$(OBJDIR)/Hv_region.o:         $(STANDARD)
+$(OBJDIR)/Hv_scaledlogs.o:     $(STANDARD)
+$(OBJDIR)/Hv_scroll.o:         $(STANDARD)
+$(OBJDIR)/Hv_separator.o:      $(STANDARD)
+$(OBJDIR)/Hv_slider.o:         $(STANDARD)
+$(OBJDIR)/Hv_standard.o:       $(STANDARD)
+$(OBJDIR)/Hv_textentryitem.o:  $(STANDARD)
+$(OBJDIR)/Hv_textitem.o:       $(PLUSPLOT)
+$(OBJDIR)/Hv_undo.o:           $(STANDARD)
+$(OBJDIR)/Hv_utilities.o:      $(STANDARD)
+$(OBJDIR)/Hv_views.o:          $(PLUSPLOT)
+$(OBJDIR)/Hv_virtual.o:        $(STANDARD)
+$(OBJDIR)/Hv_wheel.o:          $(STANDARD)
+$(OBJDIR)/Hv_worldline.o:      $(PLUSPLOT)
+$(OBJDIR)/Hv_worldpolygon.o:   $(PLUSPLOT)
+$(OBJDIR)/Hv_worldrect.o:      $(PLUSPLOT) 
+$(OBJDIR)/Hv_worldwedge.o:     $(PLUSPLOT) 
+$(OBJDIR)/Hv_xyplot.o:         $(PLUSPLOT) 
+$(OBJDIR)/Hv_xyplotedit.o:     $(PLUSPLOT) 
+$(OBJDIR)/Hv_xyplotio.o:       $(PLUSPLOT) 
+
